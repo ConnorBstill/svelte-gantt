@@ -700,7 +700,7 @@
          bind:clientHeight="{$visibleHeight}" bind:clientWidth="{$visibleWidth}">
             <div class="content" style="width:{$_width}px">
                 <Columns columns={columns} {columnStrokeColor} {columnStrokeWidth}/>
-                <div class="sg-rows" bind:this={rowContainer} style="height:{rowContainerHeight}px;">
+                <div class="sg-rows" bind:this={rowContainer} style="height:{rowContainerHeight + visibleRows.length}px;">
                     <div style="transform: translateY({paddingTop}px);">
                         {#each visibleRows as row (row.model.id)}
                         <Row row={row} />
@@ -732,7 +732,7 @@
     }
 
     :global(.sg-view:not(:first-child)) {
-        margin-left: 5px;
+        /* margin-left: 5px; */
     }
     
     /* This class should take into account varying widths of the scroll bar */
@@ -745,6 +745,7 @@
         display: flex;
         flex-direction: column;
         overflow-x: auto;
+        /* margin-left: 40px; */
     }
 
     .sg-gantt {
@@ -783,6 +784,7 @@
     }
 
     .header-container {
+        /* margin-left: 40px; */
     }
 
     .sg-header-scroller {
@@ -793,6 +795,8 @@
 
     .content {
         position: relative;
+        /* margin-left: 40px; */
+        border-left: #efefef 1px solid;
     }
 
     :global(*) {

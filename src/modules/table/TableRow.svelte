@@ -124,7 +124,8 @@
     }
 
     .sg-selected {
-        border-top: 1px solid black;
-        border-bottom: 1px solid black;
+        outline: 1px solid black;
+        /* border-top: 1px solid black;
+        border-bottom: 1px solid black; */
     }
 </style>

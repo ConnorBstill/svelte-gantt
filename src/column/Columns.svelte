@@ -68,7 +68,7 @@
 <div id="container" class="sg-columns">
 	{#each columns as column, i}
     {#if alternateColumnColorCondition(i)}
-            <Column left={column.left} width={column.width} />
+        <Column left={column.left} width={column.width} />
     {:else}
         <Column left={column.left} width={column.width} backgroundColor={'#efefef'} />
     {/if}

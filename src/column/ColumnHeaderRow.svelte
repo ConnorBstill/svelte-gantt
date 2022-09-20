@@ -119,11 +119,11 @@
 <div class="column-header-row">
     {#each _headers as _header, i}
     {#if _header.unit === 'hour' && i <= 167}
-        <div class="column-header-cell" class:sticky={header.sticky} style="width:{_header.width}px">
+        <div class="column-header-cell" class:sticky={header.sticky} class:border-left={i === 0} style="width:{_header.width}px">
             <div class="column-header-cell-label">{_header.label || 'N/A'}</div>
         </div>
     {:else if _header.unit === 'day' && i <= 6}
-        <div class="column-header-cell day" class:sticky={header.sticky} style="width:{_header.width}px">
+        <div class="column-header-cell day" class:sticky={header.sticky}  style="width:{_header.width}px">
             <div class="column-header-cell-label">{_header.label || 'N/A'}</div>
         </div>
     {/if}
@@ -157,6 +157,10 @@
 
         border-right: #777777 1px solid;
         border-bottom: #777777 1px solid;
+    }
+
+    .border-left {
+        border-left: 1px solid #777777;
     }
 
     /* .column-header-cell:hover {
