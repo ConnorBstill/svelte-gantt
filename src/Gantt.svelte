@@ -714,7 +714,7 @@
 
                     {#each visibleTasks as task (task.model.id)}
                     <Task model={task.model} left={task.left}
-                     width={task.width} height={task.height} top={task.top} {...task} />
+                     width={task.width} height={task.height} top={task.top + 2} {...task} />
                     {/each}
                 </div>
                 {#each ganttBodyModules as module}
