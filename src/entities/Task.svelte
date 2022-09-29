@@ -36,6 +36,7 @@
 
     const { dimensionsChanged } = getContext('dimensions');
     const { rowContainer } = getContext('gantt');
+    const rowY = rowContainer.getBoundingClientRect().top;
     const { taskContent, resizeHandleWidth, rowPadding, onTaskButtonClick, reflectOnParentRows, reflectOnChildRows, taskElementHook } = getContext('options');
     const { dndManager, api, utils, selectionManager, columnService } = getContext('services');
 
@@ -316,7 +317,7 @@
   use:drag
   use:taskElement={model}
   class="sg-task {model.classes}"
-  style="width:{_position.width}px; height:{height}px; transform: translate({_position.x}px, {_position.y}px);"
+  style="width:{_position.width}px; height:{height}px; transform: translate({_position.x}px, {rowY}px);"
   class:moving={_dragging || _resizing}
   class:selected
   class:animating
@@ -337,7 +338,7 @@
       </span>
     {/if}
   </div>
-
+  <p>{rowY}</p>
   {#if model.labelBottom}
     <label class="sg-label-bottom">{model.labelBottom}</label>
   {/if}

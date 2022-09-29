@@ -700,7 +700,7 @@
          bind:clientHeight="{$visibleHeight}" bind:clientWidth="{$visibleWidth}">
             <div class="content" style="width:{$_width}px">
                 <Columns columns={columns} {columnStrokeColor} {columnStrokeWidth}/>
-                <div class="sg-rows" bind:this={rowContainer} style="height:{rowContainerHeight + visibleRows.length}px;">
+                <div class="sg-rows" bind:this={rowContainer} style="height:{rowContainerHeight}px;">
                     <div style="transform: translateY({paddingTop}px);">
                         {#each visibleRows as row (row.model.id)}
                         <Row row={row} />
@@ -714,7 +714,7 @@
 
                     {#each visibleTasks as task (task.model.id)}
                     <Task model={task.model} left={task.left}
-                     width={task.width} height={task.height} top={task.top + 2} {...task} />
+                     width={task.width} height={task.height} top={task.top} {...task} />
                     {/each}
                 </div>
                 {#each ganttBodyModules as module}
@@ -726,6 +726,10 @@
 </div>
 
 <style>
+    #gantt-scroll {
+        margin-left: 39px;
+    }
+
     .sg-disable-transition :global(.sg-task),
     .sg-disable-transition :global(.sg-milestone) {
         transition: transform 0s, background-color 0.2s, width 0s !important;
@@ -737,7 +741,7 @@
     
     /* This class should take into account varying widths of the scroll bar */
     .right-scrollbar-visible {
-        padding-right: 17px;
+        padding-right: 0;
     }
 
     .sg-timeline {
