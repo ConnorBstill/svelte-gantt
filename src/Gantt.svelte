@@ -663,10 +663,10 @@
     let visibleTasks: SvelteTask[];
     $: {
         const tasks = [];
-        visibleRows.forEach(row => {
+        visibleRows.forEach((row, rowIndex) => {
             if ($rowTaskCache[row.model.id]) {
                 $rowTaskCache[row.model.id].forEach(id => {
-                    tasks.push($taskStore.entities[id]);
+                    tasks.push({ ...$taskStore.entities[id], rowIndex } );
                 });
             }
         });
@@ -713,7 +713,7 @@
                     {/each}
 
                     {#each visibleTasks as task (task.model.id)}
-                    <Task model={task.model} left={task.left}
+                    <Task task={task} model={task.model} left={task.left}
                      width={task.width} height={task.height} top={task.top} {...task} />
                     {/each}
                 </div>

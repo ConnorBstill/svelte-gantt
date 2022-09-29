@@ -12,6 +12,7 @@
     export let top;
     export let width;
     export let reflected = false;
+    export let task;
 
     let animating = true;
 
@@ -317,7 +318,7 @@
   use:drag
   use:taskElement={model}
   class="sg-task {model.classes}"
-  style="width:{_position.width}px; height:{height}px; transform: translate({_position.x}px, {rowY}px);"
+  style="width:{_position.width}px; height:{height}px; transform: translate({_position.x}px, {(8 + 40 * task.rowIndex)}px);"
   class:moving={_dragging || _resizing}
   class:selected
   class:animating
@@ -338,7 +339,7 @@
       </span>
     {/if}
   </div>
-  <p>{rowY}</p>
+  <pre>{task}</pre>
   {#if model.labelBottom}
     <label class="sg-label-bottom">{model.labelBottom}</label>
   {/if}

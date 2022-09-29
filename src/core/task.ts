@@ -26,6 +26,7 @@ export interface SvelteTask {
 
     height: number;
     reflections?: string[];
+    rowIndex?: number;
 }
 
 export class TaskFactory {
