@@ -637,7 +637,11 @@
     }
 
     let filteredRows = [];
-    $: filteredRows = $allRows.filter(row => !row.hidden);
+    // $: filteredRows = $allRows.filter(row => !row.hidden);
+    $: filteredRows = $allRows
+
+    let tableFilteredRows = [];
+    $: tableFilteredRows = $allRows.filter(row => !row.hidden);
 
     let rightScrollbarVisible;
     $: rightScrollbarVisible = rowContainerHeight > $visibleHeight;
@@ -657,8 +661,11 @@
     let paddingBottom = 0;
     $: paddingBottom = (filteredRows.length - endIndex - 1) * rowHeight;
 
-    let visibleRows = [];
-    $: visibleRows = filteredRows.slice(startIndex, endIndex + 1);
+    let visibleRows = $allRows;
+    $: visibleRows = $allRows;
+
+    let tableRows = [];
+    $: tableRows = tableFilteredRows.slice(startIndex, endIndex + 1);
 
     let visibleTasks: SvelteTask[];
     $: {
@@ -679,7 +686,7 @@
 
 <div class="sg-gantt {classes}" class:sg-disable-transition={!disableTransition} bind:this={ganttElement} on:click={onEvent} on:mouseover={onEvent} on:mouseleave={onEvent}>
     {#each ganttTableModules as module}
-    <svelte:component this={module} {rowContainerHeight} {paddingTop} {paddingBottom} tableWidth={tableWidth} {...$$restProps} on:init="{onModuleInit}" {visibleRows} />
+    <svelte:component this={module} {rowContainerHeight} {paddingTop} {paddingBottom} tableWidth={tableWidth} {...$$restProps} on:init="{onModuleInit}" visibleRows={tableRows} />
 
     <!-- <Resizer x={tableWidth} on:resize="{onResize}" container={ganttElement}></Resizer> -->
     {/each}
@@ -713,7 +720,7 @@
                     {/each}
 
                     {#each visibleTasks as task (task.model.id)}
-                    <Task task={task} model={task.model} left={task.left}
+                    <Task taskObject={task} model={task.model} left={task.left}
                      width={task.width} height={task.height} top={task.top} {...task} />
                     {/each}
                 </div>

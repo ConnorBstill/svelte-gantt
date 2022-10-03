@@ -12,7 +12,7 @@
     export let top;
     export let width;
     export let reflected = false;
-    export let task;
+    export let taskObject;
 
     let animating = true;
 
@@ -29,7 +29,7 @@
     function updatePosition(x, y, width) {
         if(!_dragging && !_resizing) {
             _position.x = x;
-            _position.y = y;//row.y + 6;
+            // _position.y = y;//row.y + 6;
             _position.width = width;
             // should NOT animate on resize/update of columns
         }
@@ -42,138 +42,142 @@
     const { dndManager, api, utils, selectionManager, columnService } = getContext('services');
 
     function drag(node) {
-        const ondrop = (event) => {
-            let rowChangeValid = true;
-            //row switching
-            const sourceRow = $rowStore.entities[model.resourceId];
-            if (event.dragging) {
-                const targetRow = dndManager.getTarget("row", event.mouseEvent);
-                if (targetRow) {
-                    model.resourceId = targetRow.model.id;
-                    api.tasks.raise.switchRow(this, targetRow, sourceRow);
-                } else {
-                    rowChangeValid = false;
-                }
-            }
-
-            _dragging = _resizing = false;
-
-            const task = $taskStore.entities[model.id];
-
-            if (rowChangeValid) {
-                const prevFrom = model.from;
-                const prevTo = model.to;
-                const newFrom = model.from = utils.roundTo(columnService.getDateByPosition(event.x));
-                const newTo = model.to = utils.roundTo(columnService.getDateByPosition(event.x + event.width));
-                const newLeft = columnService.getPositionByDate(newFrom) | 0;
-                const newRight = columnService.getPositionByDate(newTo) | 0;
-
-                const targetRow = $rowStore.entities[model.resourceId];
-                const left = newLeft;
-                const width = newRight - newLeft;
-                const top = $rowPadding + targetRow.y;
-                
-                updatePosition(left, top, width);
-
-                const newTask = {
-                    ...task,
-                    left: left,
-                    width: width,
-                    top: top,
-                    model
-                }
-
-                const changed = prevFrom != newFrom || prevTo != newTo || (sourceRow && sourceRow.model.id !== targetRow.model.id);
-                if(changed) {
-                    api.tasks.raise.change({ task: newTask, sourceRow, targetRow });
-                }
-
-                taskStore.update(newTask);
-
-                if(changed) {
-                    api.tasks.raise.changed({ task: newTask, sourceRow, targetRow });
-                }
-
-                // update shadow tasks
-                if(newTask.reflections) {
-                    taskStore.deleteAll(newTask.reflections);
-                }
-
-                const reflectedTasks = [];
-                if(reflectOnChildRows && targetRow.allChildren) {
-                    if(!newTask.reflections)
-                        newTask.reflections = [];
-
-                    const opts = { rowPadding: $rowPadding };
-                    targetRow.allChildren.forEach(r => {
-                        const reflectedTask = reflectTask(newTask, r, opts);
-                        newTask.reflections.push(reflectedTask.model.id);
-                        reflectedTasks.push(reflectedTask);
-                    });
-                }
-
-                if(reflectOnParentRows && targetRow.allParents.length > 0) {
-                    if(!newTask.reflections)
-                        newTask.reflections = [];
-
-                    const opts = { rowPadding: $rowPadding };
-                    targetRow.allParents.forEach(r => {
-                        const reflectedTask = reflectTask(newTask, r, opts);
-                        newTask.reflections.push(reflectedTask.model.id);
-                        reflectedTasks.push(reflectedTask);
-                    });
-                }
-
-                if(reflectedTasks.length > 0) {
-                    taskStore.upsertAll(reflectedTasks);
-                }
-
-                if(!(targetRow.allParents.length > 0) && !targetRow.allChildren) {
-                    newTask.reflections = null;
-                }
-            }
-            else {
-                // reset position
-                (_position.x = task.left), (_position.width = task.width), (_position.y = task.top);
-            }
-        };
-
-        const draggable = new Draggable(node, {
-            onDown: (event) => {
+        if (row.model.enableDragging) {
+            const ondrop = (event) => {
+                let rowChangeValid = true;
+                //row switching
+                const sourceRow = $rowStore.entities[model.resourceId];
                 if (event.dragging) {
-                    setCursor("move");
+                    const targetRow = dndManager.getTarget("row", event.mouseEvent);
+                    if (targetRow) {
+                        model.resourceId = sourceRow.model.id;
+                        // api.tasks.raise.switchRow(this, targetRow, sourceRow);
+                    } else {
+                        rowChangeValid = false;
+                    }
                 }
-                if (event.resizing) {
-                    setCursor("e-resize");
+    
+                _dragging = _resizing = false;
+    
+                const task = $taskStore.entities[model.id];
+    
+                if (rowChangeValid) {
+                    const prevFrom = model.from;
+                    const prevTo = model.to;
+                    const newFrom = model.from = utils.roundTo(columnService.getDateByPosition(event.x));
+                    const newTo = model.to = utils.roundTo(columnService.getDateByPosition(event.x + event.width));
+                    const newLeft = columnService.getPositionByDate(newFrom) | 0;
+                    const newRight = columnService.getPositionByDate(newTo) | 0;
+    
+                    const targetRow = sourceRow;
+                    const left = newLeft;
+                    const width = newRight - newLeft;
+                    const top = $rowPadding + targetRow.y;
+                    
+                    updatePosition(left, top, width);
+    
+                    const newTask = {
+                        ...task,
+                        left: left,
+                        width: width,
+                        top: top,
+                        model
+                    }
+    
+                    taskStore.update(newTask);
+    
+                    // const changed = prevFrom != newFrom || prevTo != newTo || (sourceRow && sourceRow.model.id !== targetRow.model.id);
+                    // if(changed) {
+                    //     api.tasks.raise.change({ task: newTask, sourceRow, targetRow });
+                    // }
+    
+                    // taskStore.update(newTask);
+    
+                    // if(changed) {
+                    //     api.tasks.raise.changed({ task: newTask, sourceRow, targetRow });
+                    // }
+    
+                    // // update shadow tasks
+                    // if(newTask.reflections) {
+                    //     taskStore.deleteAll(newTask.reflections);
+                    // }
+    
+                    // const reflectedTasks = [];
+                    // if(reflectOnChildRows && targetRow.allChildren) {
+                    //     if(!newTask.reflections)
+                    //         newTask.reflections = [];
+    
+                    //     const opts = { rowPadding: $rowPadding };
+                    //     targetRow.allChildren.forEach(r => {
+                    //         const reflectedTask = reflectTask(newTask, r, opts);
+                    //         newTask.reflections.push(reflectedTask.model.id);
+                    //         reflectedTasks.push(reflectedTask);
+                    //     });
+                    // }
+    
+                    // if(reflectOnParentRows && targetRow.allParents.length > 0) {
+                    //     if(!newTask.reflections)
+                    //         newTask.reflections = [];
+    
+                    //     const opts = { rowPadding: $rowPadding };
+                    //     targetRow.allParents.forEach(r => {
+                    //         const reflectedTask = reflectTask(newTask, r, opts);
+                    //         newTask.reflections.push(reflectedTask.model.id);
+                    //         reflectedTasks.push(reflectedTask);
+                    //     });
+                    // }
+    
+                    // if(reflectedTasks.length > 0) {
+                    //     taskStore.upsertAll(reflectedTasks);
+                    // }
+    
+                    // if(!(targetRow.allParents.length > 0) && !targetRow.allChildren) {
+                    //     newTask.reflections = null;
+                    // }
                 }
-            },
-            onMouseUp: () => {
-                setCursor("default");
-            },
-            onResize: (event) => {
-                if (model.resizable) {
-                    (_position.x = event.x), (_position.width = event.width), (_resizing = true);
+                else {
+                    // reset position
+                    (_position.x = task.left), (_position.width = task.width), (_position.y = task.top);
                 }
-            },
-            onDrag: (event) => {
-                (_position.x = event.x), (_position.y = event.y), (_dragging = true);
-            },
-            dragAllowed: () => {
-                return row.model.enableDragging && model.enableDragging;
-            },
-            resizeAllowed: () => {
-                return row.model.enableDragging && model.enableDragging;
-            },
-            onDrop: ondrop,
-            container: rowContainer,
-            resizeHandleWidth, 
-            getX: () => _position.x,
-            getY: () => _position.y,
-            getWidth: () => _position.width
-        });
-        return {
-            destroy: () => draggable.destroy()
-        };
+            };
+    
+            const draggable = new Draggable(node, {
+                onDown: (event) => {
+                    if (event.dragging) {
+                        setCursor("move");
+                    }
+                    if (event.resizing) {
+                        setCursor("e-resize");
+                    }
+                },
+                onMouseUp: () => {
+                    setCursor("default");
+                },
+                onResize: (event) => {
+                    if (model.resizable) {
+                        (_position.x = event.x), (_position.width = event.width), (_resizing = true);
+                    }
+                },
+                onDrag: (event) => {
+                    (_position.x = event.x), (_dragging = true);
+                },
+                dragAllowed: () => {
+                    return row.model.enableDragging && model.enableDragging;
+                },
+                resizeAllowed: () => {
+                    return row.model.enableDragging && model.enableDragging;
+                },
+                onDrop: ondrop,
+                container: rowContainer,
+                resizeHandleWidth, 
+                getX: () => _position.x,
+                getY: () => _position.y,
+                getWidth: () => _position.width
+            });
+            return {
+                destroy: () => draggable.destroy()
+            };
+        }
     }
 
     function taskElement(node, model) {
@@ -318,7 +322,7 @@
   use:drag
   use:taskElement={model}
   class="sg-task {model.classes}"
-  style="width:{_position.width}px; height:{height}px; transform: translate({_position.x}px, {(8 + 40 * task.rowIndex)}px);"
+  style="width:{_position.width}px; height:{height}px; transform: translate({_position.x}px, {(8 + 40 * taskObject.rowIndex)}px);"
   class:moving={_dragging || _resizing}
   class:selected
   class:animating
@@ -339,7 +343,7 @@
       </span>
     {/if}
   </div>
-  <pre>{task}</pre>
+  <!-- <pre>{taskObject.rowIndex} {model.id}</pre> -->
   {#if model.labelBottom}
     <label class="sg-label-bottom">{model.labelBottom}</label>
   {/if}
