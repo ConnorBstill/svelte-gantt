@@ -25,11 +25,18 @@
         width: width,
     }
 
+    let timer;
+    let timeout = () => {
+        if (_dragging) {
+            api['tasks'].raise.moveEnd({ task: taskObject });
+        }
+    }
+
     $: updatePosition(left, top, width);
     function updatePosition(x, y, width) {
         if(!_dragging && !_resizing) {
             _position.x = x;
-            // _position.y = y;//row.y + 6;
+            _position.y = y;//row.y + 6;
             _position.width = width;
             // should NOT animate on resize/update of columns
         }
@@ -37,7 +44,6 @@
 
     const { dimensionsChanged } = getContext('dimensions');
     const { rowContainer } = getContext('gantt');
-    const rowY = rowContainer.getBoundingClientRect().top;
     const { taskContent, resizeHandleWidth, rowPadding, onTaskButtonClick, reflectOnParentRows, reflectOnChildRows, taskElementHook } = getContext('options');
     const { dndManager, api, utils, selectionManager, columnService } = getContext('services');
 
@@ -86,16 +92,16 @@
     
                     taskStore.update(newTask);
     
-                    // const changed = prevFrom != newFrom || prevTo != newTo || (sourceRow && sourceRow.model.id !== targetRow.model.id);
-                    // if(changed) {
-                    //     api.tasks.raise.change({ task: newTask, sourceRow, targetRow });
-                    // }
+                    const changed = prevFrom != newFrom || prevTo != newTo || (sourceRow && sourceRow.model.id !== targetRow.model.id);
+                    if(changed) {
+                        api.tasks.raise.change({ task: newTask, sourceRow, targetRow });
+                    }
     
                     // taskStore.update(newTask);
     
-                    // if(changed) {
-                    //     api.tasks.raise.changed({ task: newTask, sourceRow, targetRow });
-                    // }
+                    if(changed) {
+                        api.tasks.raise.changed({ task: newTask, sourceRow, targetRow });
+                    }
     
                     // // update shadow tasks
                     // if(newTask.reflections) {
@@ -143,8 +149,10 @@
     
             const draggable = new Draggable(node, {
                 onDown: (event) => {
+                    api['tasks'].raise.select({ task: taskObject });
                     if (event.dragging) {
                         setCursor("move");
+                        timer = setTimeout(timeout, 250);
                     }
                     if (event.resizing) {
                         setCursor("e-resize");
@@ -159,7 +167,22 @@
                     }
                 },
                 onDrag: (event) => {
-                    (_position.x = event.x), (_dragging = true);
+                    // if (_position.x >= event.x + 5 || _position.x <= event.x + 5) {
+                    //     api['tasks'].raise.moveEnd({ task: $taskStore.entities[model.id], taskObject });
+                    // }
+                    
+                    if (model.enableDragging) {
+                        _position.x = event.x;
+                    }
+
+                    _dragging = true;
+
+                    clearTimeout(timer);
+                    timer = setTimeout(timeout, 250);
+
+                    if (!(_position.x % 10)) {
+                        api['tasks'].raise.move({ task: taskObject });
+                    }
                 },
                 dragAllowed: () => {
                     return row.model.enableDragging && model.enableDragging;
@@ -223,6 +246,8 @@
         resize: none;
         transition: background-color 0.2s, opacity 0.2s;
         pointer-events: all;
+        /* background: linear-gradient(to top right, rgb(116, 191, 255) calc(50% - 2px), black , rgb(116, 191, 255) calc(50% + 2px)); */
+        /* outline: 1.5px solid black; */
     }
 
     :global(.sg-task) {
@@ -253,7 +278,7 @@
 
     .sg-task.moving {
         z-index: 1;
-        opacity: 0.5;
+        opacity: 0.7;
     }
 
     /* .sg-task:hover::before {
@@ -322,9 +347,10 @@
   use:drag
   use:taskElement={model}
   class="sg-task {model.classes}"
+  id="task{model.id}"
   style="width:{_position.width}px; height:{height}px; transform: translate({_position.x}px, {(8 + 40 * taskObject.rowIndex)}px);"
   class:moving={_dragging || _resizing}
-  class:selected
+  class:selected={_dragging || selected}
   class:animating
   class:sg-task-reflected={reflected}>
   {#if model.amountDone}

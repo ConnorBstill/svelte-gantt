@@ -21,7 +21,7 @@
     // title: label to display in the header
     // property: property of row to display in the cell
     // width: width of column
-    export let tableHeaders: TableHeader[] = [{ title: 'Name', property: 'label', width: 100 }];
+    export let tableHeaders: TableHeader[] = [{ title: 'Name', property: 'label', width: 100, isHtml: false }];
 
     const { from, to, width, visibleWidth, headerHeight } = getContext('dimensions');
     const { rowPadding, rowHeight } = getContext('options');
@@ -115,7 +115,11 @@
     <div class="sg-table-header" style="height:{$headerHeight}px" bind:this={headerContainer}>
         {#each tableHeaders as header}
             <div class="sg-table-header-cell sg-table-cell" style="width:{header.width}px">
+                {#if header.isHtml}
+                {@html header.title}
+                {:else}
                 {header.title}
+                {/if}
             </div>
         {/each}
     </div>

@@ -266,7 +266,23 @@
     };
     setContext('gantt', ganttContext);
 
+    let uniqueRows = $allRows.map((row, rowIndex) => {
+
+        return ({...row, rowIndex})
+
+    });
+
+
+
     onMount(() => {
+        allRows.subscribe(allRowsData => {
+
+        uniqueRows = $allRows.map((row, rowIndex) => {
+            return ({...row, rowIndex})
+
+        });
+
+        });
         Object.assign(ganttContext, {
             rowContainer,
             mainContainer,
@@ -295,7 +311,7 @@
         } else {
             selectionManager.selectSingle(taskId);
         }
-        api['tasks'].raise.select($taskStore.entities[taskId]);
+        // api['tasks'].raise.select($taskStore.entities[taskId]);
     });
 
     onDelegatedEvent('mouseover', 'data-row-id', (event, data, target) => {
@@ -637,8 +653,8 @@
     }
 
     let filteredRows = [];
-    // $: filteredRows = $allRows.filter(row => !row.hidden);
-    $: filteredRows = $allRows
+    $: filteredRows = $allRows.filter(row => !row.hidden);
+    // $: filteredRows = $allRows
 
     let tableFilteredRows = [];
     $: tableFilteredRows = $allRows.filter(row => !row.hidden);
@@ -673,11 +689,11 @@
         visibleRows.forEach((row, rowIndex) => {
             if ($rowTaskCache[row.model.id]) {
                 $rowTaskCache[row.model.id].forEach(id => {
-                    tasks.push({ ...$taskStore.entities[id], rowIndex } );
+                    tasks.push({ ...$taskStore.entities[id], rowIndex, taskCount: $rowTaskCache[row.model.id].length });
                 });
             }
         });
-        visibleTasks = tasks;
+        visibleTasks = tasks
     }
 
     let disableTransition = true;
@@ -709,11 +725,13 @@
                 <Columns columns={columns} {columnStrokeColor} {columnStrokeWidth}/>
                 <div class="sg-rows" bind:this={rowContainer} style="height:{rowContainerHeight}px;">
                     <div style="transform: translateY({paddingTop}px);">
-                        {#each visibleRows as row (row.model.id)}
+                        {#each tableRows as row (row.model.id)}
+                        <!-- <p>ALLROWS: {$allRows.length}</p> -->
                         <Row row={row} />
                         {/each}
                     </div>
                 </div>
+
                 <div class="sg-foreground">
                     {#each $allTimeRanges as timeRange (timeRange.model.id)}
                     <TimeRange {...timeRange} />

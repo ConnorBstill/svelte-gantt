@@ -90,7 +90,8 @@
         position: relative;
         font-weight: 400;
         font-size: 14px;
-    }
+        border-top: 1px solid transparent;
+        border-bottom: 1px solid transparent;    }
 
     .sg-table-cell {
         border-left: 1px solid #eee;
@@ -124,8 +125,6 @@
     }
 
     .sg-selected {
-        outline: 1px solid black;
-        /* border-top: 1px solid black;
-        border-bottom: 1px solid black; */
+        border-color: black;
     }
 </style>
