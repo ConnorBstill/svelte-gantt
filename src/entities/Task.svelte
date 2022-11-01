@@ -26,9 +26,9 @@
     }
 
     let timer;
-    let timeout = () => {
-        if (_dragging) {
-            api['tasks'].raise.moveEnd({ task: taskObject });
+    let timeout = (newTaskObject, shouldRun?) => {
+        if (_dragging && shouldRun) {
+            api['tasks'].raise.moveEnd(newTaskObject);
         }
     }
 
@@ -152,7 +152,7 @@
                     api['tasks'].raise.select({ task: taskObject });
                     if (event.dragging) {
                         setCursor("move");
-                        timer = setTimeout(timeout, 250);
+                        timer = setTimeout(() => timeout({ task: taskObject }, true), 16);
                     }
                     if (event.resizing) {
                         setCursor("e-resize");
@@ -176,13 +176,17 @@
                     }
 
                     _dragging = true;
-
-                    clearTimeout(timer);
-                    timer = setTimeout(timeout, 250);
+                    let onQuarterMark = false;
 
                     if (!(_position.x % 10)) {
                         api['tasks'].raise.move({ task: taskObject });
+                        onQuarterMark = true
                     }
+
+                    clearTimeout(timer);
+
+                    timer = setTimeout(() => timeout({ task: taskObject }, onQuarterMark), 16);
+
                 },
                 dragAllowed: () => {
                     return row.model.enableDragging && model.enableDragging;
