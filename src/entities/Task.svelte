@@ -175,31 +175,29 @@
                     
                     if (model.enableDragging) {
                         _position.x = event.x;
+                        const newFrom = utils.roundTo(columnService.getDateByPosition(event.x));
+                        const newTo = utils.roundTo(columnService.getDateByPosition(event.x + _position.width));
+    
+                        const newLeft = columnService.getPositionByDate(newFrom) | 0;
+                        const newRight = columnService.getPositionByDate(newTo) | 0;
+    
+                        _dragging = true;
+                        let onQuarterMark = false;
+    
+                        taskObject.model.newFrom = newFrom;
+                        taskObject.model.newTo = newTo;
+    
+                        if (!(_position.x % 10)) {
+                            api['tasks'].raise.move({ task: taskObject });
+                        }
+                        if (_position.x <= newLeft - 2 || _position.x >= newLeft + 2 || !(_position.x % 10)) {
+                            onQuarterMark = true;
+                        }
+    
+                        clearTimeout(timer);
+    
+                        timer = setTimeout(() => timeout({ task: taskObject }, onQuarterMark), MOVE_END_DELAY);
                     }
-
-                    const newFrom = utils.roundTo(columnService.getDateByPosition(event.x));
-                    const newTo = utils.roundTo(columnService.getDateByPosition(event.x + _position.width));
-
-                    const newLeft = columnService.getPositionByDate(newFrom) | 0;
-                    const newRight = columnService.getPositionByDate(newTo) | 0;
-
-                    _dragging = true;
-                    let onQuarterMark = false;
-
-                    taskObject.model.newFrom = newFrom;
-                    taskObject.model.newTo = newTo;
-
-                    if (!(_position.x % 10)) {
-                        api['tasks'].raise.move({ task: taskObject });
-                    }
-                    if (_position.x <= newLeft - 2 || _position.x >= newLeft + 2 || !(_position.x % 10)) {
-                        onQuarterMark = true;
-                    }
-
-                    clearTimeout(timer);
-
-                    timer = setTimeout(() => timeout({ task: taskObject }, onQuarterMark), MOVE_END_DELAY);
-
                 },
                 dragAllowed: () => {
                     return row.model.enableDragging && model.enableDragging;
