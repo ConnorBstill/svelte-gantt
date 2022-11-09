@@ -25,6 +25,8 @@
         width: width,
     }
 
+    const MOVE_END_DELAY = 250;
+
     let timer;
     let timeout = (newTaskObject, shouldRun?) => {
         if (_dragging && shouldRun) {
@@ -90,7 +92,7 @@
                         model
                     }
     
-                    taskStore.update(newTask);
+                    // taskStore.update(newTask);
     
                     const changed = prevFrom != newFrom || prevTo != newTo || (sourceRow && sourceRow.model.id !== targetRow.model.id);
                     if(changed) {
@@ -152,7 +154,7 @@
                     api['tasks'].raise.select({ task: taskObject });
                     if (event.dragging) {
                         setCursor("move");
-                        timer = setTimeout(() => timeout({ task: taskObject }, true), 16);
+                        timer = setTimeout(() => timeout({ task: taskObject }, true), MOVE_END_DELAY);
                     }
                     if (event.resizing) {
                         setCursor("e-resize");
@@ -175,17 +177,28 @@
                         _position.x = event.x;
                     }
 
+                    const newFrom = utils.roundTo(columnService.getDateByPosition(event.x));
+                    const newTo = utils.roundTo(columnService.getDateByPosition(event.x + _position.width));
+
+                    const newLeft = columnService.getPositionByDate(newFrom) | 0;
+                    const newRight = columnService.getPositionByDate(newTo) | 0;
+
                     _dragging = true;
                     let onQuarterMark = false;
 
+                    taskObject.model.newFrom = newFrom;
+                    taskObject.model.newTo = newTo;
+
                     if (!(_position.x % 10)) {
                         api['tasks'].raise.move({ task: taskObject });
-                        onQuarterMark = true
+                    }
+                    if (_position.x <= newLeft - 2 || _position.x >= newLeft + 2 || !(_position.x % 10)) {
+                        onQuarterMark = true;
                     }
 
                     clearTimeout(timer);
 
-                    timer = setTimeout(() => timeout({ task: taskObject }, onQuarterMark), 16);
+                    timer = setTimeout(() => timeout({ task: taskObject }, onQuarterMark), MOVE_END_DELAY);
 
                 },
                 dragAllowed: () => {
@@ -269,7 +282,7 @@
         height: 100%;
         top: 0;
 
-        padding-left: 14px;
+        padding-left: 2px;
         font-size: 14px;
         display: flex;
         align-items: center;
@@ -343,6 +356,10 @@
     :global(.sg-task.selected) {
         background: rgb(69, 112, 150);
     }
+
+    .lock-icon {
+        height: 20px;
+    }
 </style>
 
 <div
@@ -361,6 +378,11 @@
   <div class="sg-task-background" style="width:{model.amountDone}%" />
   {/if}
   <div class="sg-task-content">
+    {#if !model.enableDragging}
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="black" class="w-6 h-6 lock-icon">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+    </svg>
+    {/if}
     {#if model.html}
       {@html model.html}
     {:else if taskContent}
