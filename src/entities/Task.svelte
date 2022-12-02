@@ -99,7 +99,7 @@
                         api.tasks.raise.change({ task: newTask, sourceRow, targetRow });
                     }
 
-                    api.tasks.raise.dropped({ task: newTask, sourceRow, targetRow })
+                    api.tasks.raise.dropped({ task: newTask, sourceRow, targetRow });
     
                     // taskStore.update(newTask);
     
