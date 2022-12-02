@@ -98,6 +98,8 @@
                     if(changed) {
                         api.tasks.raise.change({ task: newTask, sourceRow, targetRow });
                     }
+
+                    api.tasks.raise.dropped({ task: newTask, sourceRow, targetRow })
     
                     // taskStore.update(newTask);
     
@@ -190,7 +192,7 @@
                         if (!(_position.x % 10)) {
                             api['tasks'].raise.move({ task: taskObject });
                         }
-                        if (_position.x <= newLeft - 2 || _position.x >= newLeft + 2 || !(_position.x % 10)) {
+                        if (_position.x <= newLeft - 5 || _position.x >= newLeft + 5 || !(_position.x % 1)) {
                             onQuarterMark = true;
                         }
     

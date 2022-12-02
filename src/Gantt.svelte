@@ -295,6 +295,7 @@
         api.registerEvent('tasks', 'moveEnd');
         api.registerEvent('tasks', 'change');
         api.registerEvent('tasks', 'changed');
+        api.registerEvent('tasks', 'dropped');
         api.registerEvent('gantt', 'viewChanged');
         api.registerEvent('gantt', 'dateSelected');
         api.registerEvent('tasks', 'dblclicked');
