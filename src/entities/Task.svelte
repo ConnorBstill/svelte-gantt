@@ -61,7 +61,7 @@
                         model.resourceId = sourceRow.model.id;
                         // api.tasks.raise.switchRow(this, targetRow, sourceRow);
                     } else {
-                        rowChangeValid = false;
+                        // rowChangeValid = false;
                     }
                 }
     
