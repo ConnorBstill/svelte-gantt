@@ -1,0 +1,34 @@
+{
+  "name": "svelte-gantt",
+  "description": "Interactive JavaScript Gantt chart/resource booking component",
+  "version": "4.0.7-beta",
+  "author": "Ante Novokmet <ante.je.zakon@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ANovokmet/svelte-gantt.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ANovokmet/svelte-gantt/issues"
+  },
+  "keywords": [
+    "svelte",
+    "gantt",
+    "booking",
+    "svelte-gantt",
+    "js-gantt",
+    "javascript-gantt",
+    "react-gantt",
+    "angular-gantt",
+    "vue-gantt",
+    "drag-n-drop"
+  ],
+  "types": "types/index.d.ts",
+  "main": "index.js",
+  "peerDependencies": {
+    "moment": "^2.22.2"
+  },
+  "dependencies": {
+    "sirv-cli": "^1.0.14",
+    "watch": "^1.0.2"
+  }
+}
