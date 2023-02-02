@@ -31,7 +31,8 @@
     class:sg-hover={$hoveredRow == row.model.id} 
     class:sg-selected={$selectedRow == row.model.id}>
     {#each headers as header}
-        <div class="sg-table-body-cell sg-table-cell" style="width:{header.width}px; border-left:{header.property.includes('html') ? 'none' : '1px solid #eee;'}">
+        <div class="sg-table-body-cell sg-table-cell" style="width:{header.width}px; border-left:'1px solid #eee;'}">
+        <!-- <div class="sg-table-body-cell sg-table-cell" style="width:{header.width}px; border-left:{header.property.includes('html') ? 'none' : '1px solid #eee;'}"> -->
             {#if header.type == 'tree'}
                 <TableTreeCell on:rowCollapsed on:rowExpanded {row}>
                     {#if row.model.iconClass}
