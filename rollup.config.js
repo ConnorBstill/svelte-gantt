@@ -15,7 +15,7 @@ export default {
         format: 'es',
         name: 'window',
         extend: true,
-        dir: 'dist'
+        dir: 'dist',
     },
     plugins: [
         svelte({
@@ -32,4 +32,5 @@ export default {
         typescript(),
         production && uglify()
     ],
+
 }

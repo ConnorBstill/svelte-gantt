@@ -652,7 +652,7 @@
         }
         return null;
     }
-
+    
     let filteredRows = [];
     $: filteredRows = $allRows.filter(row => !row.hidden);
     // $: filteredRows = $allRows
@@ -709,6 +709,7 @@
     {/each}
 
     <div class="sg-timeline sg-view" id="gantt-scroll">
+        
         <div class="sg-header" bind:this={mainHeaderContainer} bind:clientHeight="{$headerHeight}" class:right-scrollbar-visible="{rightScrollbarVisible}">
             <div class="sg-header-scroller" use:horizontalScrollListener>
                 <div class="header-container" style="width:{$_width}px">
@@ -719,6 +720,7 @@
                 </div>
             </div>
         </div>
+
         <!-- on:wheel="{onwheel} -->
         <div class="sg-timeline-body" id="sg-timeline-body" bind:this={mainContainer} use:scrollable class:zooming="{zooming}"
          bind:clientHeight="{$visibleHeight}" bind:clientWidth="{$visibleWidth}">

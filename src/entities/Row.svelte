@@ -6,7 +6,7 @@
     const { hoveredRow, selectedRow } = getContext('gantt');
 </script>
 
-<div class="sg-row {row.model.classes}" data-row-id="{row.model.id}" class:sg-hover={$hoveredRow == row.model.id} class:sg-selected={$selectedRow == row.model.id} style="height:{$rowHeight}px">
+<div class="sg-row {row.model.classes}" title={row.model.tooltip} data-row-id="{row.model.id}" class:sg-hover={$hoveredRow == row.model.id} class:sg-selected={$selectedRow == row.model.id} style="height:{$rowHeight}px">
     <!-- <p>selected:{$selectedRow} row id:{row.model.id}</p> -->
     {#if row.model.contentHtml}
         {@html row.model.contentHtml}
